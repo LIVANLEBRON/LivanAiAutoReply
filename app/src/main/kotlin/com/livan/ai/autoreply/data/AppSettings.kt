@@ -4,11 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AppSettings(
-    val isMasterEnabled: Boolean = false,
-    val serverHost: String = "100.64.0.1",
-    val serverPort: Int = 3000,
+    val isMasterEnabled: Boolean = true,
+    val serverHost: String = "10.0.0.29",
+    val serverPort: Int = 11434,
     val apiEndpoint: String = "/api/chat",
-    val selectedModel: String = "llama3.2",
+    val selectedModel: String = "lfm3:latest",
     val timeoutSeconds: Int = 30,
     val temperature: Float = 0.7f,
     val defaultPersonality: String = PersonalityPreset.NATURAL.name,

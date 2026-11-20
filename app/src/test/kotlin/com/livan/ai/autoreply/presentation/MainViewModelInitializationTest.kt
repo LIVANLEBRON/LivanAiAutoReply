@@ -10,7 +10,9 @@ class MainViewModelInitializationTest {
     fun testSettingsAndPresetsInitialization() {
         val settings = AppSettings()
         assertNotNull(settings)
-        assertEquals("llama3.2", settings.selectedModel)
-        assertFalse(settings.isMasterEnabled)
+        assertEquals("lfm3:latest", settings.selectedModel)
+        assertTrue(settings.isMasterEnabled)
+        assertEquals("10.0.0.29", settings.serverHost)
+        assertEquals(11434, settings.serverPort)
     }
 }

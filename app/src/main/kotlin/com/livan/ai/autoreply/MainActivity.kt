@@ -25,7 +25,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh notification permission status when returning from settings
+        // Refresh notification permission status and ensure auto-connection to Ollama
         viewModel.checkNotificationPermission()
+        viewModel.autoConnectIfDisconnected()
     }
 }
