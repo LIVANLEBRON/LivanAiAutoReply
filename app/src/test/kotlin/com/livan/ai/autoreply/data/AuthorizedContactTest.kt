@@ -50,7 +50,8 @@ class AuthorizedContactTest {
         )
         val prompt = devora.buildHierarchicalPrompt(settings)
         assertTrue(prompt.contains("Eres Iván"))
-        assertTrue(prompt.contains("Devora te dijo que no era tu amiga"))
+        assertTrue(prompt.contains("no era tu amiga"))
+        assertTrue(prompt.contains("Estás chateando en WhatsApp directamente con: Devora"))
         assertTrue(prompt.contains("INDIFERENTE Y DISTANTE"))
         assertTrue(prompt.contains("interés por recuperar la amistad", ignoreCase = true))
     }

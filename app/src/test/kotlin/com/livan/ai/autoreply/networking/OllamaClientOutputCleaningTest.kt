@@ -15,6 +15,9 @@ class OllamaClientOutputCleaningTest {
     fun testStripPrefixesAndQuotes() {
         val raw = "\"Livana: Ya voy saliendo para allá\""
         assertEquals("Ya voy saliendo para allá", OllamaClient.cleanModelOutput(raw))
+
+        val rawIvan = "Iván: Todo tranquilo por aquí"
+        assertEquals("Todo tranquilo por aquí", OllamaClient.cleanModelOutput(rawIvan))
     }
 
     @Test

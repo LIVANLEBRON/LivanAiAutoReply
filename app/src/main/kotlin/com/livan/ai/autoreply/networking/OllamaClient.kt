@@ -224,8 +224,8 @@ class OllamaClient {
                 text = text.substring(1, text.length - 1).trim()
             }
 
-            // 4. Strip dialogue prefixes: "Yo:", "Livana:", "Asistente:", "Respuesta:", "Bot:"
-            text = text.replace(Regex("^(?:Livana|Yo|Asistente|Bot|IA|Respuesta|Mensaje|Output):\\s*", RegexOption.IGNORE_CASE), "")
+            // 4. Strip dialogue prefixes: "Yo:", "Livana:", "Iván:", "Asistente:", "Respuesta:", "Bot:"
+            text = text.replace(Regex("^(?:Livana|Iván|Ivan|Yo|Asistente|Bot|IA|Respuesta|Mensaje|Output):\\s*", RegexOption.IGNORE_CASE), "")
 
             // 5. Strip outer quotation marks again if inside prefix
             if ((text.startsWith("\"") && text.endsWith("\"")) || (text.startsWith("'") && text.endsWith("'"))) {
