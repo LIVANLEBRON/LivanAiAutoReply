@@ -44,9 +44,11 @@ class PreferencesManager(context: Context) {
             loaded.copy(
                 serverHost = "100.89.243.4",
                 serverPort = 11434,
-                selectedModel = if (loaded.selectedModel == "llama3.2") "lfm3:latest" else loaded.selectedModel,
+                selectedModel = if (loaded.selectedModel == "llama3.2" || loaded.selectedModel == "lfm3:latest" || loaded.selectedModel == "ivan:latest") "livan:latest" else loaded.selectedModel,
                 isMasterEnabled = true
             )
+        } else if (loaded.selectedModel == "ivan:latest") {
+            loaded.copy(selectedModel = "livan:latest")
         } else {
             loaded
         }

@@ -136,6 +136,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     _availableModels.value = result.models
                     if (settings.value.selectedModel.isBlank() || !result.models.contains(settings.value.selectedModel)) {
                         val targetModel = when {
+                            result.models.contains("livan:latest") -> "livan:latest"
                             result.models.contains("ivan:latest") -> "ivan:latest"
                             result.models.contains("lfm3:latest") -> "lfm3:latest"
                             else -> result.models.first()

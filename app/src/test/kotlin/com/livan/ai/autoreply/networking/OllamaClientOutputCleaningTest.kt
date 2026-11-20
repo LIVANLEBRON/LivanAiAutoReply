@@ -16,6 +16,9 @@ class OllamaClientOutputCleaningTest {
         val raw = "\"Livana: Ya voy saliendo para allá\""
         assertEquals("Ya voy saliendo para allá", OllamaClient.cleanModelOutput(raw))
 
+        val rawLivan = "Livan: Todo tranquilo por aquí"
+        assertEquals("Todo tranquilo por aquí", OllamaClient.cleanModelOutput(rawLivan))
+
         val rawIvan = "Iván: Todo tranquilo por aquí"
         assertEquals("Todo tranquilo por aquí", OllamaClient.cleanModelOutput(rawIvan))
     }

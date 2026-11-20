@@ -28,14 +28,14 @@ class AuthorizedContactTest {
     }
 
     @Test
-    fun testHierarchicalPromptContainsIvanIdentityAndScienceInterests() {
+    fun testHierarchicalPromptContainsLivanIdentityAndScienceInterests() {
         val settings = AppSettings()
         val contact = AuthorizedContact(
             name = "Carlos",
             personality = PersonalityPreset.NATURAL.name
         )
         val prompt = contact.buildHierarchicalPrompt(settings)
-        assertTrue(prompt.contains("Eres Iván"))
+        assertTrue(prompt.contains("Eres Livan"))
         assertTrue(prompt.contains("ciencia"))
         assertTrue(prompt.contains("economía"))
         assertTrue(prompt.contains("REGLA DE PREVALENCIA"))
@@ -49,7 +49,7 @@ class AuthorizedContactTest {
             personality = PersonalityPreset.NATURAL.name
         )
         val prompt = devora.buildHierarchicalPrompt(settings)
-        assertTrue(prompt.contains("Eres Iván"))
+        assertTrue(prompt.contains("Eres Livan"))
         assertTrue(prompt.contains("no era tu amiga"))
         assertTrue(prompt.contains("Estás chateando en WhatsApp directamente con: Devora"))
         assertTrue(prompt.contains("INDIFERENTE Y DISTANTE"))
