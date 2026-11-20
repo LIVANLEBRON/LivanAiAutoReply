@@ -12,11 +12,21 @@ class PreferencesManager(context: Context) {
     private val prefs: SharedPreferences = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val json = Json { ignoreUnknownKeys = true; prettyPrint = false }
 
-    private val _settings = MutableStateFlow(loadSettings())
-    val settings: StateFlow<AppSettings> = _settings.asStateFlow()
+    private val _settings: MutableStateFlow<AppSettings>
+    val settings: StateFlow<AppSettings>
 
-    private val _contacts = MutableStateFlow(loadContacts())
-    val contacts: StateFlow<List<AuthorizedContact>> = _contacts.asStateFlow()
+    private val _contacts: MutableStateFlow<List<AuthorizedContact>>
+    val contacts: StateFlow<List<AuthorizedContact>>
+
+    init {
+        val initialSettings = loadSettings()
+        _settings = MutableStateFlow(initialSettings)
+        settings = _settings.asStateFlow()
+
+        val initialContacts = loadContacts()
+        _contacts = MutableStateFlow(initialContacts)
+        contacts = _contacts.asStateFlow()
+    }
 
     private fun loadSettings(): AppSettings {
         val raw = prefs.getString(KEY_SETTINGS, null)
@@ -99,7 +109,7 @@ class PreferencesManager(context: Context) {
         }
 
         if (updatedList != list) {
-            saveContacts(updatedList)
+            prefs.edit().putString(KEY_CONTACTS, json.encodeToString(updatedList)).apply()
         }
         return updatedList
     }
