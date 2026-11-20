@@ -182,7 +182,7 @@ fun DashboardTab(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Dns,
+                            imageVector = Icons.Default.Share,
                             contentDescription = "Servidor",
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -279,7 +279,7 @@ fun DashboardTab(
                 title = "Vigilados",
                 value = "$activeContactsCount",
                 subtitle = "de ${contacts.size} contactos",
-                icon = Icons.Default.People,
+                icon = Icons.Default.Person,
                 onClick = onNavigateToContacts
             )
             MetricCard(
@@ -301,7 +301,7 @@ fun DashboardTab(
                 title = "Procesados",
                 value = "$totalProcessed",
                 subtitle = "mensajes totales",
-                icon = Icons.Default.ChatBubble,
+                icon = Icons.AutoMirrored.Filled.Send,
                 onClick = {}
             )
             MetricCard(
@@ -309,7 +309,7 @@ fun DashboardTab(
                 title = "Errores",
                 value = "$totalErrors",
                 subtitle = "fallos registrados",
-                icon = Icons.Default.ErrorOutline,
+                icon = Icons.Default.Warning,
                 onClick = {}
             )
         }

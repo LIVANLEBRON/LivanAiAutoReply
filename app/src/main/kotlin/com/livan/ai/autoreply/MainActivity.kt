@@ -1,10 +1,12 @@
-package com.livan.ai.autoreply.presentation
+package com.livan.ai.autoreply
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import com.livan.ai.autoreply.presentation.MainScreen
+import com.livan.ai.autoreply.presentation.MainViewModel
 import com.livan.ai.autoreply.ui.theme.LivanAIAutoReplyTheme
 
 class MainActivity : ComponentActivity() {

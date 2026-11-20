@@ -7,9 +7,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -81,9 +81,9 @@ fun ServerTab(
                 ) {
                     Icon(
                         imageVector = when {
-                            ollamaStatus == null -> Icons.Default.Dns
+                            ollamaStatus == null -> Icons.Default.Share
                             ollamaStatus.isSuccess -> Icons.Default.CheckCircle
-                            else -> Icons.Default.Error
+                            else -> Icons.Default.Warning
                         },
                         contentDescription = null,
                         tint = when {
@@ -222,7 +222,7 @@ fun ServerTab(
                         },
                         singleLine = true,
                         modifier = Modifier
-                            .menuAnchor()
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth()
                     )
 

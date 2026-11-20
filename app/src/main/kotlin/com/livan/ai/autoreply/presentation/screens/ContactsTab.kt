@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -165,7 +164,7 @@ private fun ContactItemCard(
                         SuggestionChip(
                             onClick = {},
                             label = { Text("Grupos", fontSize = 11.sp) },
-                            icon = { Icon(Icons.Default.Group, contentDescription = null, modifier = Modifier.size(12.dp)) }
+                            icon = { Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(12.dp)) }
                         )
                     }
                 }
@@ -238,7 +237,7 @@ private fun AddContactDialog(
                         label = { Text("Personalidad asignada") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
                         modifier = Modifier
-                            .menuAnchor()
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                             .fillMaxWidth()
                     )
 

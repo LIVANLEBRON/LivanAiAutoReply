@@ -6,9 +6,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -155,7 +155,7 @@ fun PersonalityTab(
                             onUpdateSettings(settings.copy(customSystemPrompt = promptText))
                         }
                     ) {
-                        Icon(Icons.Default.RestartAlt, contentDescription = "Restablecer a plantilla")
+                        Icon(Icons.Default.Refresh, contentDescription = "Restablecer a plantilla")
                     }
                 }
 
@@ -225,7 +225,7 @@ fun PersonalityTab(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.Psychology,
+                        imageVector = Icons.Default.Face,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.tertiary
                     )

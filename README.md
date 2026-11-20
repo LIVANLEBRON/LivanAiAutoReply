@@ -1,6 +1,6 @@
 # Livan AI AutoReply
 
-[![Download APK](https://img.shields.io/badge/Descargar-APK%20v1.0.1-success?style=for-the-badge&logo=android)](https://github.com/LIVANLEBRON/LivanAiAutoReply/releases/download/v1.0.1/LivanAiAutoReply.apk)
+[![Download APK](https://img.shields.io/badge/Descargar-APK%20v1.0.2-success?style=for-the-badge&logo=android)](https://github.com/LIVANLEBRON/LivanAiAutoReply/releases/download/v1.0.2/LivanAiAutoReply.apk)
 
 **Livan AI AutoReply** es una aplicación nativa para Android desarrollada en **Kotlin** y **Jetpack Compose (Material 3)**, diseñada para interceptar notificaciones de WhatsApp de contactos autorizados y responder automáticamente utilizando un modelo de inteligencia artificial local ejecutado en tu PC mediante **Ollama** a través de tu red privada **Tailscale**.
 
@@ -9,8 +9,8 @@
 ## 📥 Descarga Directa del APK
 
 Puedes descargar e instalar directamente la última versión corregida:
-* 📲 **[Descargar LivanAiAutoReply.apk (v1.0.1)](https://github.com/LIVANLEBRON/LivanAiAutoReply/releases/download/v1.0.1/LivanAiAutoReply.apk)**
-* 📦 **[Página de Releases en GitHub](https://github.com/LIVANLEBRON/LivanAiAutoReply/releases/tag/v1.0.1)**
+* 📲 **[Descargar LivanAiAutoReply.apk (v1.0.2)](https://github.com/LIVANLEBRON/LivanAiAutoReply/releases/download/v1.0.2/LivanAiAutoReply.apk)**
+* 📦 **[Página de Releases en GitHub](https://github.com/LIVANLEBRON/LivanAiAutoReply/releases/tag/v1.0.2)**
 
 ---
 

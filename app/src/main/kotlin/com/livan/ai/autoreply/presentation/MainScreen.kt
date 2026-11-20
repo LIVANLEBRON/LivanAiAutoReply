@@ -3,7 +3,12 @@ package com.livan.ai.autoreply.presentation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,11 +20,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.livan.ai.autoreply.presentation.screens.*
 
 enum class NavigationTab(val title: String, val icon: ImageVector) {
-    DASHBOARD("Inicio", Icons.Default.Dashboard),
-    CONTACTS("Contactos", Icons.Default.People),
-    PERSONALITY("Personalidad", Icons.Default.Psychology),
-    SERVER("Servidor", Icons.Default.Dns),
-    HISTORY("Historial", Icons.Default.History),
+    DASHBOARD("Inicio", Icons.Default.Home),
+    CONTACTS("Contactos", Icons.Default.Person),
+    PERSONALITY("Personalidad", Icons.Default.Face),
+    SERVER("Servidor", Icons.Default.Share),
+    HISTORY("Historial", Icons.Default.Notifications),
     SETTINGS("Ajustes", Icons.Default.Settings)
 }
 
