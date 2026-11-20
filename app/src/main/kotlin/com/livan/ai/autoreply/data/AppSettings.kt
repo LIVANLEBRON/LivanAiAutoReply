@@ -8,7 +8,7 @@ data class AppSettings(
     val serverHost: String = "100.89.243.4",
     val serverPort: Int = 11434,
     val apiEndpoint: String = "/api/chat",
-    val selectedModel: String = "lfm3:latest",
+    val selectedModel: String = "ivan:latest",
     val timeoutSeconds: Int = 30,
     val temperature: Float = 0.4f,
     val defaultPersonality: String = PersonalityPreset.NATURAL.name,

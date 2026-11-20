@@ -66,4 +66,30 @@ class AuthorizedContactTest {
         assertTrue(prompt.contains("FILTRO INDIVIDUAL ACTIVO: SECO Y MINIMALISTA"))
         assertTrue(prompt.contains("monosílabos"))
     }
+
+    @Test
+    fun testDevoraContextIsStrictlyIsolatedAndNotPresentForOtherContacts() {
+        val settings = AppSettings()
+        val otherContact = AuthorizedContact(
+            name = "Laura",
+            personality = PersonalityPreset.NATURAL.name
+        )
+        val prompt = otherContact.buildHierarchicalPrompt(settings)
+        assertFalse(prompt.contains("Devora"))
+        assertFalse(prompt.contains("no era tu amiga"))
+        assertFalse(prompt.contains("INDIFERENTE Y DISTANTE"))
+    }
+
+    @Test
+    fun testPrevalenceRuleOverridesDefaultPoliteness() {
+        val settings = AppSettings()
+        val indifferentContact = AuthorizedContact(
+            name = "Devora",
+            personality = PersonalityPreset.INDIFERENTE.name
+        )
+        val prompt = indifferentContact.buildHierarchicalPrompt(settings)
+        assertTrue(prompt.contains("REGLA DE PREVALENCIA"))
+        assertTrue(prompt.contains("PREVALECEN sobre cualquier amabilidad general"))
+        assertTrue(prompt.contains("Si el filtro o contexto exige indiferencia, sequedad o distancia, DEBES acatarlo estrictamente"))
+    }
 }

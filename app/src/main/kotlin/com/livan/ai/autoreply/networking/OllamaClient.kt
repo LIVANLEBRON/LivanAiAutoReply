@@ -50,11 +50,11 @@ class OllamaClient {
                     val stopArray = JSONArray().apply {
                         put("\nUser:")
                         put("\nUsuario:")
-                        put("\nLivana:")
+                        put("\nIván:")
+                        put("\nIvan:")
                         put("\nContacto:")
                         put("\nRemitente:")
                         put("\n[")
-                        put("<think>")
                     }
                     put("stop", stopArray)
                 }
