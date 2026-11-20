@@ -32,7 +32,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val contacts: StateFlow<List<AuthorizedContact>> = preferencesManager.contacts
     val history: StateFlow<List<HistoryItem>> = historyRepository.history
 
-    private val _isNotificationPermissionGranted = MutableStateFlow(checkNotificationPermission())
+    private val _isNotificationPermissionGranted = MutableStateFlow(false)
     val isNotificationPermissionGranted: StateFlow<Boolean> = _isNotificationPermissionGranted.asStateFlow()
 
     private val _ollamaStatus = MutableStateFlow<OllamaTestResult?>(null)
@@ -50,11 +50,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isSimulating = MutableStateFlow(false)
     val isSimulating: StateFlow<Boolean> = _isSimulating.asStateFlow()
 
+    init {
+        checkNotificationPermission()
+    }
+
     fun checkNotificationPermission(): Boolean {
         val context = getApplication<Application>()
-        val cn = ComponentName(context, LivanNotificationListenerService::class.java)
-        val flat = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
-        val isGranted = flat != null && flat.contains(cn.flattenToString())
+        val isGranted = try {
+            NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
+        } catch (_: Exception) {
+            try {
+                val cn = ComponentName(context, LivanNotificationListenerService::class.java)
+                val flat = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
+                flat != null && flat.contains(cn.flattenToString())
+            } catch (_: Exception) {
+                false
+            }
+        }
         _isNotificationPermissionGranted.value = isGranted
         return isGranted
     }

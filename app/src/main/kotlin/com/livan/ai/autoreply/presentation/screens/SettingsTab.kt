@@ -103,7 +103,7 @@ fun SettingsTab(
                     }
                 }
 
-                Divider()
+                HorizontalDivider()
 
                 // Battery Optimization Exemption
                 Row(
@@ -207,7 +207,7 @@ fun SettingsTab(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Divider()
+                HorizontalDivider()
 
                 // Ignore groups toggle
                 Row(
@@ -231,7 +231,7 @@ fun SettingsTab(
                     )
                 }
 
-                Divider()
+                HorizontalDivider()
 
                 // Manual confirmation toggle
                 Row(
