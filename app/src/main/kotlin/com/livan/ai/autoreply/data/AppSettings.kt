@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppSettings(
     val isMasterEnabled: Boolean = true,
-    val serverHost: String = "10.0.0.29",
+    val serverHost: String = "100.89.243.4",
     val serverPort: Int = 11434,
     val apiEndpoint: String = "/api/chat",
     val selectedModel: String = "lfm3:latest",

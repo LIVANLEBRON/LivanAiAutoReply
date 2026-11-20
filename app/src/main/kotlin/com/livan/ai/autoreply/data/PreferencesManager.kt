@@ -29,10 +29,10 @@ class PreferencesManager(context: Context) {
         } else {
             AppSettings()
         }
-        // Auto-migrate old provisional settings to current live server
-        return if (loaded.serverHost == "100.64.0.1" || loaded.serverPort == 3000) {
+        // Auto-migrate old provisional settings to current live Tailscale IP
+        return if (loaded.serverHost == "100.64.0.1" || loaded.serverHost == "10.0.0.29" || loaded.serverPort == 3000) {
             val migrated = loaded.copy(
-                serverHost = "10.0.0.29",
+                serverHost = "100.89.243.4",
                 serverPort = 11434,
                 selectedModel = if (loaded.selectedModel == "llama3.2") "lfm3:latest" else loaded.selectedModel,
                 isMasterEnabled = true

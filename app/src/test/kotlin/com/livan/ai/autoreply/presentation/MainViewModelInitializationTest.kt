@@ -12,7 +12,7 @@ class MainViewModelInitializationTest {
         assertNotNull(settings)
         assertEquals("lfm3:latest", settings.selectedModel)
         assertTrue(settings.isMasterEnabled)
-        assertEquals("10.0.0.29", settings.serverHost)
+        assertEquals("100.89.243.4", settings.serverHost)
         assertEquals(11434, settings.serverPort)
     }
 }

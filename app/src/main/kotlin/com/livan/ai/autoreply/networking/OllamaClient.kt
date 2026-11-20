@@ -16,7 +16,8 @@ data class OllamaTestResult(
     val isSuccess: Boolean,
     val latencyMs: Long,
     val models: List<String> = emptyList(),
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val resolvedHost: String? = null
 )
 
 class OllamaClient {
@@ -124,63 +125,66 @@ class OllamaClient {
     }
 
     suspend fun testConnectionAndFetchModels(settings: AppSettings): OllamaTestResult = withContext(Dispatchers.IO) {
-        val client = buildHttpClient(settings.timeoutSeconds.coerceAtMost(10))
-        val baseUrl = settings.buildBaseUrl()
-        val tagsUrl = "$baseUrl/api/tags"
+        val candidates = linkedSetOf(
+            settings.serverHost.trim(),
+            "100.89.243.4",
+            "nobara-pc",
+            "10.0.0.29"
+        ).filter { it.isNotBlank() }
 
-        val startTime = System.currentTimeMillis()
-        try {
-            val request = Request.Builder()
-                .url(tagsUrl)
-                .get()
-                .header("User-Agent", "LivanAIAutoReply/1.0 (Android)")
-                .build()
+        var lastError: Exception? = null
+        for (host in candidates) {
+            val testSettings = settings.copy(serverHost = host)
+            val startTime = System.currentTimeMillis()
+            val client = buildHttpClient(4)
+            val tagsUrl = "${testSettings.buildBaseUrl()}/api/tags"
 
-            client.newCall(request).execute().use { response ->
-                val latency = System.currentTimeMillis() - startTime
-                if (!response.isSuccessful) {
-                    return@withContext OllamaTestResult(
-                        isSuccess = false,
-                        latencyMs = latency,
-                        errorMessage = "Error HTTP ${response.code}: ${response.message}"
-                    )
-                }
+            try {
+                val request = Request.Builder()
+                    .url(tagsUrl)
+                    .get()
+                    .header("User-Agent", "LivanAIAutoReply/1.0 (Android)")
+                    .build()
 
-                val body = response.body?.string().orEmpty()
-                val json = JSONObject(body)
-                val modelsList = mutableListOf<String>()
-
-                if (json.has("models")) {
-                    val modelsArray = json.getJSONArray("models")
-                    for (i in 0 until modelsArray.length()) {
-                        val modelObj = modelsArray.getJSONObject(i)
-                        val name = modelObj.optString("name", "")
-                        if (name.isNotBlank()) {
-                            modelsList.add(name)
+                client.newCall(request).execute().use { response ->
+                    val latency = System.currentTimeMillis() - startTime
+                    if (response.isSuccessful) {
+                        val body = response.body?.string().orEmpty()
+                        val json = JSONObject(body)
+                        val modelsList = mutableListOf<String>()
+                        if (json.has("models")) {
+                            val modelsArray = json.getJSONArray("models")
+                            for (i in 0 until modelsArray.length()) {
+                                val modelObj = modelsArray.getJSONObject(i)
+                                val name = modelObj.optString("name", "")
+                                if (name.isNotBlank()) modelsList.add(name)
+                            }
                         }
+                        return@withContext OllamaTestResult(
+                            isSuccess = true,
+                            latencyMs = latency,
+                            models = modelsList,
+                            resolvedHost = host
+                        )
                     }
                 }
-
-                OllamaTestResult(
-                    isSuccess = true,
-                    latencyMs = latency,
-                    models = modelsList
-                )
+            } catch (e: Exception) {
+                lastError = e
             }
-        } catch (e: Exception) {
-            val latency = System.currentTimeMillis() - startTime
-            val readableMsg = when {
-                e.message?.contains("Failed to connect", ignoreCase = true) == true ->
-                    "No se pudo conectar a $baseUrl. Revisa la IP, el puerto y que Tailscale esté activo."
-                e.message?.contains("timeout", ignoreCase = true) == true ->
-                    "Tiempo de espera agotado al conectar con $baseUrl."
-                else -> e.localizedMessage ?: e.javaClass.simpleName
-            }
-            OllamaTestResult(
-                isSuccess = false,
-                latencyMs = latency,
-                errorMessage = readableMsg
-            )
         }
+
+        val baseUrl = settings.buildBaseUrl()
+        val readableMsg = when {
+            lastError?.message?.contains("Failed to connect", ignoreCase = true) == true ->
+                "No se pudo conectar a $baseUrl. Verifica que Tailscale esté activo en tu teléfono."
+            lastError?.message?.contains("timeout", ignoreCase = true) == true ->
+                "Tiempo de espera agotado al conectar a $baseUrl."
+            else -> lastError?.localizedMessage ?: "No se pudo conectar a $baseUrl"
+        }
+        OllamaTestResult(
+            isSuccess = false,
+            latencyMs = 0L,
+            errorMessage = readableMsg
+        )
     }
 }

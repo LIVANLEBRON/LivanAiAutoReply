@@ -108,11 +108,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _isTestingOllama.value = true
             val result = ollamaClient.testConnectionAndFetchModels(settings.value)
             _ollamaStatus.value = result
-            if (result.isSuccess && result.models.isNotEmpty()) {
-                _availableModels.value = result.models
-                if (settings.value.selectedModel.isBlank() || !result.models.contains(settings.value.selectedModel)) {
-                    val targetModel = if (result.models.contains("lfm3:latest")) "lfm3:latest" else result.models.first()
-                    updateSettings(settings.value.copy(selectedModel = targetModel))
+            if (result.isSuccess) {
+                if (result.resolvedHost != null && result.resolvedHost != settings.value.serverHost) {
+                    updateSettings(settings.value.copy(serverHost = result.resolvedHost))
+                }
+                if (result.models.isNotEmpty()) {
+                    _availableModels.value = result.models
+                    if (settings.value.selectedModel.isBlank() || !result.models.contains(settings.value.selectedModel)) {
+                        val targetModel = if (result.models.contains("lfm3:latest")) "lfm3:latest" else result.models.first()
+                        updateSettings(settings.value.copy(selectedModel = targetModel))
+                    }
                 }
             }
             _isTestingOllama.value = false
