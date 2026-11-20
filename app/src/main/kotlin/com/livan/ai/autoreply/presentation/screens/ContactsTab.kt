@@ -22,7 +22,7 @@ import com.livan.ai.autoreply.data.PersonalityPreset
 @Composable
 fun ContactsTab(
     contacts: List<AuthorizedContact>,
-    onAddContact: (String, PersonalityPreset, Boolean, String?) -> Unit,
+    onAddContact: (String, PersonalityPreset, Boolean, String?, String?) -> Unit,
     onDeleteContact: (String) -> Unit,
     onToggleContact: (String, Boolean) -> Unit
 ) {
@@ -106,8 +106,8 @@ fun ContactsTab(
     if (showAddDialog) {
         AddContactDialog(
             onDismiss = { showAddDialog = false },
-            onConfirm = { name, preset, allowInGroups, customPrompt ->
-                onAddContact(name, preset, allowInGroups, customPrompt)
+            onConfirm = { name, preset, allowInGroups, customPrompt, relationshipContext ->
+                onAddContact(name, preset, allowInGroups, customPrompt, relationshipContext)
                 showAddDialog = false
             }
         )
@@ -160,6 +160,13 @@ private fun ContactItemCard(
                         label = { Text("Estilo: ${contact.getPersonalityPreset().title}", fontSize = 11.sp) }
                     )
 
+                    if (contact.getEffectiveRelationshipContext() != null) {
+                        SuggestionChip(
+                            onClick = {},
+                            label = { Text("Contexto activo", fontSize = 11.sp) }
+                        )
+                    }
+
                     if (contact.allowInGroups) {
                         SuggestionChip(
                             onClick = {},
@@ -191,12 +198,13 @@ private fun ContactItemCard(
 @Composable
 private fun AddContactDialog(
     onDismiss: () -> Unit,
-    onConfirm: (name: String, preset: PersonalityPreset, allowInGroups: Boolean, customPrompt: String?) -> Unit
+    onConfirm: (name: String, preset: PersonalityPreset, allowInGroups: Boolean, customPrompt: String?, relationshipContext: String?) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var selectedPreset by remember { mutableStateOf(PersonalityPreset.NATURAL) }
     var allowInGroups by remember { mutableStateOf(false) }
     var customPrompt by remember { mutableStateOf("") }
+    var relationshipContext by remember { mutableStateOf("") }
     var isExpanded by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
 
@@ -273,6 +281,15 @@ private fun AddContactDialog(
                     )
                 }
 
+                OutlinedTextField(
+                    value = relationshipContext,
+                    onValueChange = { relationshipContext = it },
+                    label = { Text("Contexto de la relación (opcional)") },
+                    placeholder = { Text("Ej: No somos amigos; responder con frialdad y distancia...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 3
+                )
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
@@ -296,7 +313,8 @@ private fun AddContactDialog(
                             name,
                             selectedPreset,
                             allowInGroups,
-                            if (selectedPreset == PersonalityPreset.PERSONALIZADA) customPrompt else null
+                            if (selectedPreset == PersonalityPreset.PERSONALIZADA) customPrompt else null,
+                            relationshipContext.trim().ifBlank { null }
                         )
                     }
                 }

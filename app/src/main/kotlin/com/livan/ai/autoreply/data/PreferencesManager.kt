@@ -66,18 +66,42 @@ class PreferencesManager(context: Context) {
 
     private fun loadContacts(): List<AuthorizedContact> {
         val raw = prefs.getString(KEY_CONTACTS, null)
-        return if (raw != null) {
+        val list = if (raw != null) {
             try {
                 json.decodeFromString<List<AuthorizedContact>>(raw)
             } catch (_: Exception) {
                 emptyList()
             }
         } else {
-            // Default initial demo contacts
-            listOf(
-                AuthorizedContact(name = "Contacto de Prueba", isEnabled = true, personality = PersonalityPreset.NATURAL.name)
-            )
+            emptyList()
         }
+
+        // Always ensure Devora is configured with her explicit individual context and Indifferente filter
+        val hasDevora = list.any { it.name.contains("Devora", ignoreCase = true) || it.name.contains("Debora", ignoreCase = true) }
+        val updatedList = if (!hasDevora) {
+            val devoraContact = AuthorizedContact(
+                name = "Devora",
+                isEnabled = true,
+                personality = PersonalityPreset.INDIFERENTE.name,
+                relationshipContext = DEVORA_CONTEXT
+            )
+            list + devoraContact
+        } else {
+            list.map { contact ->
+                if (contact.name.contains("Devora", ignoreCase = true) || contact.name.contains("Debora", ignoreCase = true)) {
+                    val p = if (contact.personality == PersonalityPreset.NATURAL.name) PersonalityPreset.INDIFERENTE.name else contact.personality
+                    val c = if (contact.relationshipContext.isNullOrBlank()) DEVORA_CONTEXT else contact.relationshipContext
+                    contact.copy(personality = p, relationshipContext = c)
+                } else {
+                    contact
+                }
+            }
+        }
+
+        if (updatedList != list) {
+            saveContacts(updatedList)
+        }
+        return updatedList
     }
 
     private fun saveContacts(list: List<AuthorizedContact>) {

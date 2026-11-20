@@ -80,12 +80,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         preferencesManager.updateSettings(newSettings)
     }
 
-    fun addContact(name: String, personality: PersonalityPreset, allowInGroups: Boolean, customPrompt: String? = null) {
+    fun addContact(
+        name: String,
+        personality: PersonalityPreset,
+        allowInGroups: Boolean,
+        customPrompt: String? = null,
+        relationshipContext: String? = null
+    ) {
+        val cleanName = name.trim()
+        val isDevora = cleanName.contains("devora", ignoreCase = true) || cleanName.contains("debora", ignoreCase = true)
+        val finalContext = when {
+            !relationshipContext.isNullOrBlank() -> relationshipContext.trim()
+            isDevora -> com.livan.ai.autoreply.data.DEVORA_CONTEXT
+            else -> null
+        }
+        val finalPersonality = if (isDevora && personality == PersonalityPreset.NATURAL) {
+            PersonalityPreset.INDIFERENTE.name
+        } else {
+            personality.name
+        }
+
         val contact = AuthorizedContact(
-            name = name.trim(),
+            name = cleanName,
             isEnabled = true,
-            personality = personality.name,
+            personality = finalPersonality,
             customPrompt = customPrompt?.trim()?.ifBlank { null },
+            relationshipContext = finalContext,
             allowInGroups = allowInGroups
         )
         preferencesManager.addContact(contact)
@@ -136,13 +156,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _isSimulating.value = true
             _simulationReply.value = null
 
-            val effectivePrompt = if (personality == PersonalityPreset.PERSONALIZADA && customPrompt.isNotBlank()) {
-                customPrompt
-            } else if (customPrompt.isNotBlank()) {
-                customPrompt
-            } else {
-                personality.defaultPrompt
-            }
+            val dummyContact = AuthorizedContact(
+                name = "Contacto de Prueba",
+                personality = personality.name,
+                customPrompt = customPrompt.ifBlank { null }
+            )
+            val effectivePrompt = dummyContact.buildHierarchicalPrompt(settings.value)
 
             val tempSettings = settings.value.copy(temperature = temperature)
             val result = ollamaClient.generateChatReply(

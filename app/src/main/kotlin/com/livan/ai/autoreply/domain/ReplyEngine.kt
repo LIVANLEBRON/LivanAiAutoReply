@@ -117,7 +117,7 @@ class ReplyEngine(
         }
 
         // 10. Generate Reply with Ollama
-        val systemPrompt = contact.effectivePrompt(settings.getEffectiveSystemPrompt())
+        val systemPrompt = contact.buildHierarchicalPrompt(settings)
         val historyList = contactConversations.getOrPut(contact.id) { mutableListOf() }
         val recentHistory = synchronized(historyList) {
             historyList.takeLast(settings.maxContextMessages).toList()

@@ -100,8 +100,8 @@ fun MainScreen(viewModel: MainViewModel) {
                 )
                 NavigationTab.CONTACTS -> ContactsTab(
                     contacts = contacts,
-                    onAddContact = { name, preset, allowInGroups, customPrompt ->
-                        viewModel.addContact(name, preset, allowInGroups, customPrompt)
+                    onAddContact = { name, preset, allowInGroups, customPrompt, relationshipContext ->
+                        viewModel.addContact(name, preset, allowInGroups, customPrompt, relationshipContext)
                     },
                     onDeleteContact = { viewModel.deleteContact(it) },
                     onToggleContact = { id, enabled -> viewModel.toggleContact(id, enabled) }
