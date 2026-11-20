@@ -1,0 +1,114 @@
+package com.livan.ai.autoreply.data
+
+import android.content.Context
+import android.content.SharedPreferences
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+class PreferencesManager(context: Context) {
+    private val prefs: SharedPreferences = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val json = Json { ignoreUnknownKeys = true; prettyPrint = false }
+
+    private val _settings = MutableStateFlow(loadSettings())
+    val settings: StateFlow<AppSettings> = _settings.asStateFlow()
+
+    private val _contacts = MutableStateFlow(loadContacts())
+    val contacts: StateFlow<List<AuthorizedContact>> = _contacts.asStateFlow()
+
+    private fun loadSettings(): AppSettings {
+        val raw = prefs.getString(KEY_SETTINGS, null)
+        return if (raw != null) {
+            try {
+                json.decodeFromString<AppSettings>(raw)
+            } catch (_: Exception) {
+                AppSettings()
+            }
+        } else {
+            AppSettings()
+        }
+    }
+
+    fun updateSettings(newSettings: AppSettings) {
+        _settings.value = newSettings
+        prefs.edit().putString(KEY_SETTINGS, json.encodeToString(newSettings)).apply()
+    }
+
+    fun setMasterEnabled(enabled: Boolean) {
+        updateSettings(_settings.value.copy(isMasterEnabled = enabled))
+    }
+
+    private fun loadContacts(): List<AuthorizedContact> {
+        val raw = prefs.getString(KEY_CONTACTS, null)
+        return if (raw != null) {
+            try {
+                json.decodeFromString<List<AuthorizedContact>>(raw)
+            } catch (_: Exception) {
+                emptyList()
+            }
+        } else {
+            // Default initial demo contacts
+            listOf(
+                AuthorizedContact(name = "Contacto de Prueba", isEnabled = true, personality = PersonalityPreset.NATURAL.name)
+            )
+        }
+    }
+
+    private fun saveContacts(list: List<AuthorizedContact>) {
+        _contacts.value = list
+        prefs.edit().putString(KEY_CONTACTS, json.encodeToString(list)).apply()
+    }
+
+    fun addContact(contact: AuthorizedContact) {
+        val current = _contacts.value.toMutableList()
+        // Replace if already exists with same name or id
+        current.removeAll { it.id == contact.id || it.name.equals(contact.name.trim(), ignoreCase = true) }
+        current.add(contact)
+        saveContacts(current)
+    }
+
+    fun updateContact(contact: AuthorizedContact) {
+        val current = _contacts.value.map { if (it.id == contact.id) contact else it }
+        saveContacts(current)
+    }
+
+    fun deleteContact(contactId: String) {
+        val current = _contacts.value.filterNot { it.id == contactId }
+        saveContacts(current)
+    }
+
+    fun toggleContactEnabled(contactId: String, enabled: Boolean) {
+        val current = _contacts.value.map {
+            if (it.id == contactId) it.copy(isEnabled = enabled) else it
+        }
+        saveContacts(current)
+    }
+
+    fun findAuthorizedContact(senderName: String): AuthorizedContact? {
+        val trimmed = senderName.trim()
+        return _contacts.value.firstOrNull { contact ->
+            contact.isEnabled && (
+                contact.name.equals(trimmed, ignoreCase = true) ||
+                trimmed.contains(contact.name, ignoreCase = true) ||
+                contact.name.contains(trimmed, ignoreCase = true)
+            )
+        }
+    }
+
+    companion object {
+        private const val PREFS_NAME = "livan_ai_autoreply_prefs"
+        private const val KEY_SETTINGS = "key_app_settings"
+        private const val KEY_CONTACTS = "key_authorized_contacts"
+
+        @Volatile
+        private var instance: PreferencesManager? = null
+
+        fun getInstance(context: Context): PreferencesManager {
+            return instance ?: synchronized(this) {
+                instance ?: PreferencesManager(context).also { instance = it }
+            }
+        }
+    }
+}
