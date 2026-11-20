@@ -30,18 +30,29 @@ class PreferencesManager(context: Context) {
             AppSettings()
         }
         // Auto-migrate old provisional settings to current live Tailscale IP
-        return if (loaded.serverHost == "100.64.0.1" || loaded.serverHost == "10.0.0.29" || loaded.serverPort == 3000) {
-            val migrated = loaded.copy(
+        var migrated = if (loaded.serverHost == "100.64.0.1" || loaded.serverHost == "10.0.0.29" || loaded.serverPort == 3000) {
+            loaded.copy(
                 serverHost = "100.89.243.4",
                 serverPort = 11434,
                 selectedModel = if (loaded.selectedModel == "llama3.2") "lfm3:latest" else loaded.selectedModel,
                 isMasterEnabled = true
             )
-            prefs.edit().putString(KEY_SETTINGS, json.encodeToString(migrated)).apply()
-            migrated
         } else {
             loaded
         }
+
+        // Migrate old assistant-style system prompt to real human WhatsApp prompt
+        if (migrated.customSystemPrompt.contains("Eres un asistente conversacional", ignoreCase = true)) {
+            migrated = migrated.copy(
+                customSystemPrompt = PersonalityPreset.NATURAL.defaultPrompt,
+                temperature = 0.4f
+            )
+        }
+
+        if (migrated != loaded) {
+            prefs.edit().putString(KEY_SETTINGS, json.encodeToString(migrated)).apply()
+        }
+        return migrated
     }
 
     fun updateSettings(newSettings: AppSettings) {

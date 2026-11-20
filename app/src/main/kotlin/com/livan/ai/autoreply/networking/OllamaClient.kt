@@ -47,6 +47,16 @@ class OllamaClient {
 
                 val options = JSONObject().apply {
                     put("temperature", settings.temperature.toDouble())
+                    val stopArray = JSONArray().apply {
+                        put("\nUser:")
+                        put("\nUsuario:")
+                        put("\nLivana:")
+                        put("\nContacto:")
+                        put("\nRemitente:")
+                        put("\n[")
+                        put("<think>")
+                    }
+                    put("stop", stopArray)
                 }
                 put("options", options)
 
@@ -105,7 +115,10 @@ class OllamaClient {
                     val messageObj = responseJson.getJSONObject("message")
                     val content = messageObj.optString("content", "").trim()
                     if (content.isNotBlank()) {
-                        return@withContext Result.success(content)
+                        val cleaned = cleanModelOutput(content)
+                        if (cleaned.isNotBlank()) {
+                            return@withContext Result.success(cleaned)
+                        }
                     }
                 }
 
@@ -113,7 +126,10 @@ class OllamaClient {
                 if (responseJson.has("response")) {
                     val content = responseJson.optString("response", "").trim()
                     if (content.isNotBlank()) {
-                        return@withContext Result.success(content)
+                        val cleaned = cleanModelOutput(content)
+                        if (cleaned.isNotBlank()) {
+                            return@withContext Result.success(cleaned)
+                        }
                     }
                 }
 
@@ -186,5 +202,50 @@ class OllamaClient {
             latencyMs = 0L,
             errorMessage = readableMsg
         )
+    }
+
+    companion object {
+        fun cleanModelOutput(raw: String): String {
+            var text = raw.trim()
+
+            // 1. Strip reasoning and thinking blocks
+            text = text.replace(Regex("(?s)<think>.*?</think>"), "")
+            text = text.replace(Regex("(?s)<thought>.*?</thought>"), "")
+            text = text.replace(Regex("(?s)<reasoning>.*?</reasoning>"), "")
+            text = text.replace(Regex("(?s)\\[pensamiento:.*?\\]", RegexOption.IGNORE_CASE), "")
+
+            // 2. Strip markdown blocks if enclosed
+            if (text.startsWith("```") && text.endsWith("```")) {
+                text = text.removeSurrounding("```").trim()
+            }
+
+            // 3. Strip outer quotation marks
+            if ((text.startsWith("\"") && text.endsWith("\"")) || (text.startsWith("'") && text.endsWith("'"))) {
+                text = text.substring(1, text.length - 1).trim()
+            }
+
+            // 4. Strip dialogue prefixes: "Yo:", "Livana:", "Asistente:", "Respuesta:", "Bot:"
+            text = text.replace(Regex("^(?:Livana|Yo|Asistente|Bot|IA|Respuesta|Mensaje|Output):\\s*", RegexOption.IGNORE_CASE), "")
+
+            // 5. Strip outer quotation marks again if inside prefix
+            if ((text.startsWith("\"") && text.endsWith("\"")) || (text.startsWith("'") && text.endsWith("'"))) {
+                text = text.substring(1, text.length - 1).trim()
+            }
+
+            // 5. Remove customer service endings
+            val servicePhrases = listOf(
+                Regex("¿?En qué (?:más )?te puedo (?:ayudar|colaborar).*?$", RegexOption.IGNORE_CASE),
+                Regex("¿?Qué más puedo hacer por ti.*?$", RegexOption.IGNORE_CASE),
+                Regex("¿?En qué te ayudo.*?$", RegexOption.IGNORE_CASE),
+                Regex("Si necesitas algo(?: más)?, solo dime.*?$", RegexOption.IGNORE_CASE),
+                Regex("Quedo a tu disposición.*?$", RegexOption.IGNORE_CASE),
+                Regex("Espero haberte ayudado.*?$", RegexOption.IGNORE_CASE)
+            )
+            for (regex in servicePhrases) {
+                text = text.replace(regex, "").trim()
+            }
+
+            return text.trim()
+        }
     }
 }

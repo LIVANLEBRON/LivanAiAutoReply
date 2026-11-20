@@ -10,7 +10,7 @@ data class AppSettings(
     val apiEndpoint: String = "/api/chat",
     val selectedModel: String = "lfm3:latest",
     val timeoutSeconds: Int = 30,
-    val temperature: Float = 0.7f,
+    val temperature: Float = 0.4f,
     val defaultPersonality: String = PersonalityPreset.NATURAL.name,
     val customSystemPrompt: String = PersonalityPreset.NATURAL.defaultPrompt,
     val maxContextMessages: Int = 5,

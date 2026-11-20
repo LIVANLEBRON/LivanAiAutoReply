@@ -27,6 +27,7 @@ class ReplyEngine(
     private val recentlySentTexts = LinkedList<String>()
     private val contactLastReplyTime = HashMap<String, Long>()
     private val globalReplyTimestamps = LinkedList<Long>()
+    private val contactConversations = java.util.concurrent.ConcurrentHashMap<String, MutableList<Pair<String, String>>>()
 
     suspend fun processNotification(parsed: ParsedNotification): Boolean {
         val settings = preferencesManager.settings.value
@@ -117,12 +118,17 @@ class ReplyEngine(
 
         // 10. Generate Reply with Ollama
         val systemPrompt = contact.effectivePrompt(settings.getEffectiveSystemPrompt())
-        val startTime = System.currentTimeMillis()
+        val historyList = contactConversations.getOrPut(contact.id) { mutableListOf() }
+        val recentHistory = synchronized(historyList) {
+            historyList.takeLast(settings.maxContextMessages).toList()
+        }
 
+        val startTime = System.currentTimeMillis()
         val result = ollamaClient.generateChatReply(
             settings = settings,
             systemPrompt = systemPrompt,
-            userMessage = parsed.messageText
+            userMessage = parsed.messageText,
+            conversationHistory = recentHistory
         )
 
         val latency = System.currentTimeMillis() - startTime
@@ -192,6 +198,15 @@ class ReplyEngine(
                 recentlySentTexts.add(finalReply)
                 if (recentlySentTexts.size > 50) {
                     recentlySentTexts.removeFirst()
+                }
+
+                // Add to multi-turn conversation memory
+                synchronized(historyList) {
+                    historyList.add("user" to parsed.messageText)
+                    historyList.add("assistant" to finalReply)
+                    if (historyList.size > 20) {
+                        historyList.subList(0, historyList.size - 20).clear()
+                    }
                 }
             }
 
